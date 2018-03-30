@@ -39,3 +39,7 @@ diff --rcs ../tools/build_options/linux_amd64_gfortran linux_amd64_gfortran | aw
 # d125 1
 # a125 1
 #     LIBS="-L${NETCDF_LIB} ${LIBS}"
+
+export CC=gcc
+mkdir nf90io/run
+./testreport -of linux_amd64_gfortran -t nf90io_gaussian_bump
