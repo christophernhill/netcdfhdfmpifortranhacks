@@ -1,0 +1,41 @@
+# Provision an CentOS 7 machine started from AWS AMI us-east-1 ami-66a7871c
+# Install software
+yum -y install http://build.openhpc.community/OpenHPC:/1.3/CentOS_7/x86_64/ohpc-release-1.3-1.el7.x86_64.rpm
+yum -y install ohpc-base
+yum -y install netcdf-gnu-mvapich2-ohpc
+yum -y install glibc-headers
+yum -y install glibc-devel
+yum -y install netcdf-fortran-gnu-mvapich2-ohpc
+yum -y install mlocate
+yum -y install git
+
+yum -y install pnetcdf-gnu7-mvapich2-ohpc
+
+
+# Activate needed modules
+module load gnu/5.4.0
+module load  openmpi/1.10.6
+module load netcdf/4.4.1.1
+module load netcdf-fortran/4.4.4
+
+# Check various flags
+nc-config --all
+h5pcc -showconfig
+
+# Get MITgcm
+git clone https://github.com/jklymak/MITgcm jklymak-MITgcm
+cd jklymak-MITgcm
+git checkout enh-nf90io
+cd verification
+cp ../tools/build_options/linux_amd64_gfortran .
+echo 'Now hand edit build options file accoridng to output below'
+diff -b  ../tools/build_options/ linux_amd64_gfortran 
+125a126,133
+>     if [ "x$NETCDF_FORTRAN_INC" != x -a "x$NETCDF_FORTRAN_LIB" != x ]; then
+>        NETCDF_FINC=`echo $NETCDF_FORTRAN_INC | sed 's/-I//g'`
+>        NETCDF_FLIB=`echo $NETCDF_FORTRAN_LIB | sed 's/-L//g'`
+>        INCLUDEDIR="$NETCDF_FINC $INCLUDEDIR"
+>        INCLUDES="-I$NETCDF_FINC $INCLUDES"
+>        LIBDIR="$NETCDF_FLIB $INCLUDEDIR"
+>        LIBS="-L$NETCDF_FLIB $LIBS"
+>     fi
